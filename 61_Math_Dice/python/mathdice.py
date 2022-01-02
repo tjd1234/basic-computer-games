@@ -9,71 +9,93 @@ key.
 To conclude the program, type 0.
 """)
 
+face = [
+"""
+ -----
+|     |
+|  *  |
+|     |
+ -----
+""",
+
+"""
+ -----
+| *   |
+|     |
+|   * |
+ -----
+""",
+
+"""
+ -----
+| *   |
+|  *  |
+|   * |
+ -----
+""",
+
+"""
+ -----
+| * * |
+|     |
+| * * |
+ -----
+""",
+
+"""
+ -----
+| * * |
+|  *  |
+| * * |
+ -----
+""",
+
+""" 
+ -----
+| * * |
+| * * |
+| * * |
+ -----
+""",
+]
+
+# remove the leading \n at the start of each face
+face = [d.lstrip('\n') for d in face]
+
 def print_dice(n):
-    
-    def print_0():
-        print("|     |")
-    def print_2():
-        print("| * * |")
-
-    print(" ----- ")
-
-    if n in [4,5,6]:
-        print_2()
-    elif n in [2,3]:
-        print("| *   |")
-    else:
-        print_0()
-
-    if n in [1,3,5]:
-        print("|  *  |")
-    elif n in [2,4]:
-        print_0()
-    else:
-        print_2()
-
-    if n in [4,5,6]:
-        print_2()
-    elif n in [2,3]:
-        print("|   * |")
-    else:
-        print_0()
-
-    print(" ----- ")
+    print(face[n-1], end='')
 
 def main():
-
     while True:
-        d1 = randint(1,6)
-        d2 = randint(1,6)
+        d1 = randint(1, 6)
+        d2 = randint(1, 6)
+        total = d1 + d2
         guess = 13
 
         print_dice(d1)
-        print("   +")
+        print('   +')
         print_dice(d2)
-        print("   =")
+        print('   =')
 
         tries = 0
-        while guess != (d1 + d2) and tries < 2:
+        while guess != total and tries < 2:
             if tries == 1:
-                print("No, count the spots and give another answer.")
+                print('No, count the spots and give another answer.')
             try:
                 guess = int(input())
             except ValueError:
                 print("That's not a number!")
             if guess == 0:
-                exit()
+                return
             tries += 1
 
-        if guess != (d1 + d2):
-            print(f"No, the answer is {d1 + d2}!")
+        if guess != total:
+            print(f'No, the answer is {total}!')
         else:
-            print("Correct!")
+            print('Correct!')
+
+        print('The dice roll again....')
 
 
-        print("The dice roll again....")
-
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
