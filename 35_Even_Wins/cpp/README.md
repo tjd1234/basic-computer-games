@@ -63,6 +63,22 @@ Modify [evenwins1.cpp](evenwins1.cpp) to use `Player` for `whose_turn` instead
 of `string`. Put your updated code in [evenwins2.cpp](evenwins2.cpp).
 
 
+### Wins and Losses
+
+Modify [evenwins2.cpp](evenwins2.cpp) to so that at the end of every game it
+tells the user how many games they and the computer have won, e.g.:
+
+```
+  Statistics
+  ----------
+   total games: 3
+    human wins: 2
+ computer wins: 1
+```
+
+Put your updated code in [evenwins3.cpp](evenwins2.cpp).
+
+
 ### Removing Global Variables
 
 In general, global variables are a *bad* idea in programming because it can be
@@ -70,4 +86,3 @@ very difficult to know when they change, and which part of a program changes
 them. In small programs global variables may not be too much of a problem, but
 as your programs get bigger and more complex, global variables are more and
 more of a problem.
-
