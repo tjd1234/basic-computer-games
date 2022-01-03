@@ -1,4 +1,8 @@
-// evenwins.cpp
+// evenwins1.cpp
+
+//
+// Based on evenwins.cpp. Prints the title in a box.
+//
 
 #include <iostream>
 #include <string>
@@ -14,7 +18,10 @@ int computer_marbles  = -1;
 string whose_turn     = "";
 
 void welcome_screen() {
-    cout << "Welcome to Even Wins!\n";
+    cout << "+-----------------------+\n"
+         << "| Welcome to Even Wins! |\n"
+         << "+-----------------------+\n\n";
+
     cout << "Even Wins is a two-person game. You start with\n";
     cout << "27 marbles in the middle of the table.\n";
     cout << "\n";

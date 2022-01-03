@@ -1,4 +1,8 @@
-// evenwins.cpp
+// evenwins2.cpp
+
+//
+// Based on evenwins1.cpp. Makes whose_turn an enumerated type.
+//
 
 #include <iostream>
 #include <string>
@@ -11,10 +15,19 @@ using namespace std;
 int marbles_in_middle = -1;
 int human_marbles     = -1;
 int computer_marbles  = -1;
-string whose_turn     = "";
+
+enum class Player {
+    human,
+    computer
+};
+
+Player whose_turn;
 
 void welcome_screen() {
-    cout << "Welcome to Even Wins!\n";
+    cout << "+-----------------------+\n"
+         << "| Welcome to Even Wins! |\n"
+         << "+-----------------------+\n\n";
+
     cout << "Even Wins is a two-person game. You start with\n";
     cout << "27 marbles in the middle of the table.\n";
     cout << "\n";
@@ -37,10 +50,10 @@ void choose_first_player() {
         string ans;
         cin >> ans;
         if (ans == "y") {
-            whose_turn = "human";
+            whose_turn = Player::human;
             return;
         } else if (ans == "n") {
-            whose_turn = "computer";
+            whose_turn = Player::computer;
             return;
         } else {
             cout << "\nPlease enter 'y' if you want to play first,\n";
@@ -50,10 +63,10 @@ void choose_first_player() {
 } // choose_first_player
 
 void next_player() {
-    if (whose_turn == "human"){
-        whose_turn = "computer";
-    } else if (whose_turn == "computer") {
-        whose_turn = "human";
+    if (whose_turn == Player::human){
+        whose_turn = Player::computer;
+    } else if (whose_turn == Player::computer) {
+        whose_turn = Player::human;
     } 
 }
 
@@ -146,11 +159,11 @@ void play_game() {
         if (marbles_in_middle == 0) {
             game_over();
             return;
-        } else if (whose_turn == "human") {
+        } else if (whose_turn == Player::human) {
             human_turn();
             print_board();
             next_player();
-        } else if (whose_turn == "computer") {
+        } else if (whose_turn == Player::computer) {
             computer_turn();
             print_board();
             next_player();
