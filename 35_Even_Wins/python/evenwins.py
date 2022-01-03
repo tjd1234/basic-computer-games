@@ -1,258 +1,206 @@
-# evenwins.py
+# evenwins.py 
+
+#
+# This version of evenwins.bas based on game decscription and does *not*
+# follow the source. The computer chooses marbles at random.
+#
+# For simplicity, global variables are used to store the game state.
+# A good exercise would be to replace this with a class.
+#
+# The code is not short, but hopefully it is easy for beginners to understand
+# and modify.
+#
+# Infinite loops of the style "while True:" are used to simplify some of the
+# code. The "continue" keyword is used in a few places to jump back to the top
+# of the loop. The "return" keyword is also used to break out of functions.
+# This is generally considered poor style, but in this case it simplifies the
+# code and makes it easier to read (at least in my opinion). A good exercise
+# would be to remove these infinite loops, and uses of continue, to follow a
+# more structured style.
+#
+
+import random
 
 # global variables
-total = 0
-m = 0
-m1 = 0
-go_first = ''
-human_move = 0
+marbles_in_middle = -1
+human_marbles     = -1
+computer_marbles  = -1
+whose_turn        = ''
 
-intro_text = """
-EVEN WINS
-CREATIVE COMPUTING  MORRISTOWN, NEW JERSEY
+# Only called during development for serious errors that are due to mistakes
+# in the program. Should never be called during a regular game.
+def serious_error(msg):
+    print('serious_error: ' + msg)
+    exit(1)
 
-     THIS IS A TWO PERSON GAME CALLED 'EVEN WINS.'
-TO PLAY THE GAME, THE PLAYERS NEED 27 MARBLES OR
-OTHER OBJECTS ON A TABLE.
-
-     THE ONLY RULES ARE THAT (1) YOU MUST ALTERNATE TURNS,
-(2) YOU MUST TAKE BETWEEN 1 AND 4 MARBLES EACH TURN,
-AND (3) YOU CANNOT SKIP A TURN.
-
-     THE 2 PLAYERS ALTERNATE TURNS, WITH EACH PLAYER
-REMOVING FROM 1 TO 4 MARBLES ON EACH MOVE.  THE GAME
-ENDS WHEN THERE ARE NO MARBLES LEFT, AND THE WINNER
-IS THE ONE WITH AN EVEN NUMBER OF MARBLES.
-
-     TYPE A '1' IF YOU WANT TO GO FIRST, AND TYPE
-A '0' IF YOU WANT ME TO GO FIRST.
-"""
-
-# 1160 PRINT
-# 1170 PRINT "THE NUMBER OF MARBLES YOU TAKE MUST BE A POSITIVE"
-# 1180 PRINT "INTEGER BETWEEN 1 AND 4."
-# 1190 PRINT
-# 1200 PRINT "     WHAT IS YOUR NEXT MOVE?"
-# 1210 PRINT
-bad_move_text = """
-THE NUMBER OF MARBLES YOU TAKE MUST BE A POSITIVE
-INTEGER BETWEEN 1 AND 4.
-
-     WHAT IS YOUR NEXT MOVE?
-"""
-
-def bad_move(): print(bad_move_text)
-
-def print_total(): print(f'\nTOTAL={total}')
-
-
-def game_over():
-    # 880 PRINT "THAT IS ALL OF THE MARBLES."
-    # 890 PRINT
-    # 900 PRINT " MY TOTAL IS";M1;", YOUR TOTAL IS";Y1
-    # 910 PRINT
-    # 920 IF INT(M1/2)=M1/2 THEN 950
-    # 930 PRINT "     YOU WON.  DO YOU WANT TO PLAY"
-    print('THAT IS ALL OF THE MARBLES.')
+def welcome_screen():
+    print('Welcome to Even Wins!')
+    print('Based on evenwins.bas from Creative Computing')
     print()
-    print(f' MY TOTAL IS {m1}, YOUR TOTAL IS {y1}')
+    print('Even Wins is a two-person game. You start with')
+    print('27 marbles in the middle of the table.')
     print()
-    if int(m1/2) == m1/2:
-        # 950 PRINT "     I WON.  DO YOU WANT TO PLAY"
-        print('     I WON.  DO YOU WANT TO PLAY')
+    print('Players alternate taking marbles from the middle.')
+    print('A player can take 1 to 4 marbles on their turn, and')
+    print('turns cannot be skipped. The game ends when there are')
+    print('no marbles left, and the winner is the one with an even')
+    print('number of marbles.')
+    print()
+
+def marbles_str(n):
+    if n == 1: return '1 marble'
+    return f'{n} marbles'
+
+def choose_first_player():
+    global whose_turn
+    while True:
+        ans = input('Do you want to play first? (y/n) --> ')
+        if ans == 'y': 
+            whose_turn = 'human'
+            return
+        elif ans == 'n':
+            whose_turn = 'computer'
+            return
+        else:
+            print()
+            print('Please enter "y" if you want to play first,')
+            print('or "n" if you want to play second.')
+            print()
+
+def next_player():
+    global whose_turn
+    if whose_turn == 'human':
+        whose_turn = 'computer'
+    elif whose_turn == 'computer':
+        whose_turn = 'human'
     else:
-        print('     YOU WON.  DO YOU WANT TO PLAY')
-    # 960 PRINT "AGAIN?  TYPE 1 FOR YES AND 0 FOR NO."
-    # 970 INPUT A1
-    print('AGAIN?  TYPE 1 FOR YES AND 0 FOR NO.')
-    play_again = input('? ')
-    if play_again == '0':
-        print('OK.  SEE YOU LATER.')
+        serious_error(f'play_game: unknown player {whose_turn}')
+
+# Converts a string s to an int, if possible.
+def to_int(s):
+    try:
+        n = int(s)
+        return True, n
+    except:
+        return False, 0
+
+def print_board():
+    global marbles_in_middle
+    global human_marbles
+    global computer_marbles
+    print()
+    print(f' marbles in the middle: {marbles_in_middle} ' + marbles_in_middle*'*')
+    print(f'    # marbles you have: {human_marbles}')
+    print(f'# marbles computer has: {computer_marbles}')
+    print()
+
+def human_turn():
+    global marbles_in_middle
+    global human_marbles
+
+    # get number in range 1 to min(4, marbles_in_middle)
+    max_choice = min(4, marbles_in_middle)
+    print("It's your turn!")
+    while True:
+        s = input(f'Marbles to take? (1 - {max_choice}) --> ')
+        ok, n = to_int(s)
+        if not ok:
+            print()
+            print(f'  Please enter a whole number from 1 to {max_choice}')
+            print()
+            continue
+        if n < 1:
+            print()
+            print('  You must take at least 1 marble!')
+            print()
+            continue
+        if n > max_choice:
+            print()
+            print(f'  You can take at most {marbles_str(max_choice)}')
+            print()
+            continue
+        print()
+        print(f'Okay, taking {marbles_str(n)} ...')
+        marbles_in_middle -= n
+        human_marbles += n
         return
 
-def main():
-    print(intro_text)
-    go_first = input('? ')
-    if go_first == '0':
-        # computer goes first
-        total = 27  # start with 27 marbles
-        m = 2
-        # 270 PRINT:PRINT "TOTAL=";T:PRINT
-        # 280 M1=M1+M
-        # 290 T=T-M
-        # 300 PRINT "I PICK UP";M;"MARBLES."
-        print_total()
-        m1 = m1 + m
-        total = total - m
-        if total == 0:
-            game_over()
-        else: #  there are 1 or more marbles left   
-            # 320 PRINT:PRINT "TOTAL=";T
-            # 330 PRINT
-            # 340 PRINT "     AND WHAT IS YOUR NEXT MOVE, MY TOTAL IS";M1
-            # 350 INPUT Y
-            # 360 PRINT
-            print_total()
-            print()
-            print(f'     AND WHAT IS YOUR NEXT MOVE, MY TOTAL IS {m1}')
-            human_move = input('? ')
-            # 370 IF Y<1 THEN 1160
-            # 380 IF Y>4 THEN 1160
-            if human_move < 1: bad_move()
-            if human_move > 4: bad_move()
-
-            # 390 IF Y<=T THEN 430
-
-
+def game_over():
+    global marbles_in_middle
+    global human_marbles
+    global computer_marbles
+    print()
+    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    print('!! All the marbles are taken: Game Over!')
+    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    print()
+    print_board()
+    if human_marbles % 2 == 0:
+        print('You are the winner! Congratulations!')
     else:
-        # human goes first
+        print('The computer wins: all hail mighty silicon!')
+    print('')
 
+def computer_turn():
+    global marbles_in_middle
+    global computer_marbles
+
+    print("It's the computer's turn ...")
+    max_choice = min(4, marbles_in_middle)
+
+    # choose at random
+    n = random.randint(1, max_choice)
+    print(f'Computer takes {marbles_str(n)} ...')
+    marbles_in_middle -= n
+    computer_marbles += n
+
+def play_game():
+    global marbles_in_middle
+    global human_marbles
+    global computer_marbles
+
+    # initialize the game state
+    marbles_in_middle = 27
+    human_marbles = 0
+    computer_marbles = 0
+    print_board()
+
+    while True:
+        if marbles_in_middle == 0:
+            game_over()
+            return
+        elif whose_turn == 'human':
+            human_turn()
+            print_board()
+            next_player()
+        elif whose_turn == 'computer':
+            computer_turn()
+            print_board()
+            next_player()
+        else:
+            serious_error(f'play_game: unknown player {whose_turn}')
+
+def main():
+    global whose_turn
+
+    welcome_screen()
+
+    while True:
+        choose_first_player()
+        play_game()
+
+        # ask if the user if they want to play again
+        print()
+        again = input('Would you like to play again? (y/n) --> ')
+        if again == 'y':
+            print()
+            print("Ok, let's play again ...")
+            print()
+        else:
+            print()
+            print('Ok, thanks for playing ... goodbye!')
+            print()
+            return
 
 if __name__ == '__main__':
     main()
-
-
-"""
-
-1 PRINT TAB(31);"EVEN WINS"
-2 PRINT TAB(15);"CREATIVE COMPUTING  MORRISTOWN, NEW JERSEY"
-3 PRINT:PRINT
-4 Y1=0
-10 M1=0
-20 DIM M(20),Y(20)
-30 PRINT "     THIS IS A TWO PERSON GAME CALLED 'EVEN WINS.'"
-40 PRINT "TO PLAY THE GAME, THE PLAYERS NEED 27 MARBLES OR"
-50 PRINT "OTHER OBJECTS ON A TABLE."
-60 PRINT
-70 PRINT 
-80 PRINT "     THE 2 PLAYERS ALTERNATE TURNS, WITH EACH PLAYER"
-90 PRINT "REMOVING FROM 1 TO 4 MARBLES ON EACH MOVE.  THE GAME"
-100 PRINT "ENDS WHEN THERE ARE NO MARBLES LEFT, AND THE WINNER"
-110 PRINT "IS THE ONE WITH AN EVEN NUMBER OF MARBLES."
-120 PRINT
-130 PRINT
-140 PRINT "     THE ONLY RULES ARE THAT (1) YOU MUST ALTERNATE TURNS,"
-150 PRINT "(2) YOU MUST TAKE BETWEEN 1 AND 4 MARBLES EACH TURN,"
-160 PRINT "AND (3) YOU CANNOT SKIP A TURN."
-170 PRINT
-180 PRINT
-190 PRINT
-
-# start the game: asks user who moves first
-200 PRINT "     TYPE A '1' IF YOU WANT TO GO FIRST, AND TYPE"
-210 PRINT "A '0' IF YOU WANT ME TO GO FIRST."
-220 INPUT C
-225 PRINT
-230 IF C=0 THEN 250
-240 GOTO 1060
-
-# computer moves first
-250 T=27
-260 M=2
-270 PRINT:PRINT "TOTAL=";T:PRINT
-280 M1=M1+M
-290 T=T-M
-300 PRINT "I PICK UP";M;"MARBLES."
-310 IF T=0 THEN 880
-320 PRINT:PRINT "TOTAL=";T
-330 PRINT
-340 PRINT "     AND WHAT IS YOUR NEXT MOVE, MY TOTAL IS";M1
-350 INPUT Y
-360 PRINT
-370 IF Y<1 THEN 1160
-380 IF Y>4 THEN 1160
-390 IF Y<=T THEN 430
-400 PRINT "     YOU HAVE TRIED TO TAKE MORE MARBLES THAN THERE ARE"
-410 PRINT "LEFT.  TRY AGAIN."
-420 GOTO 350
-430 Y1=Y1+Y
-440 T=T-Y
-450 IF T=0 THEN 880
-460 PRINT "TOTAL=";T
-470 PRINT
-480 PRINT "YOUR TOTAL IS";Y1
-490 IF T<.5 THEN 880 # ??: how is this line executed?
-500 R=T-6*INT(T/6)  # equal to T % 6
-510 IF INT(Y1/2)=Y1/2 THEN 700
-520 IF T<4.2 THEN 580 # Why decimal points? R and T are ints
-530 IF R>3.4 THEN 62
-0 # Why decimal points? R and T are ints
-540 M=R+1
-550 M1=M1+M
-560 T=T-M
-570 GOTO 300
-580 M=T
-590 T=T-M
-600 GOTO 830
-610 REM     250 IS WHERE I WIN.
-620 IF R<4.7 THEN 660
-630 IF R>3.5 THEN 660
-640 M=1
-650 GOTO 670
-660 M=4
-670 T=T-M
-680 M1=M1+M
-690 GOTO 300
-700 REM     I AM READY TO ENCODE THE STRAT FOR WHEN OPP TOT IS EVEN
-710 IF R<1.5 THEN 1020 # goto 640
-720 IF R>5.3 THEN 1020 # goto 640
-730 M=R-1
-740 M1=M1+M
-750 T=T-M
-760 IF T<.2 THEN 790
-770 REM     IS # ZERO HERE
-780 GOTO 300
-790 REM     IS = ZERO HERE
-800 PRINT "I PICK UP";M;"MARBLES."
-810 PRINT
-820 GOTO 880
-830 REM    THIS IS WHERE I WIN
-840 PRINT "I PICK UP";M;"MARBLES."
-850 PRINT
-860 PRINT "TOTAL = 0"
-870 M1=M1+M
-
-# no marbles remaining after last move
-880 PRINT "THAT IS ALL OF THE MARBLES."
-890 PRINT
-900 PRINT " MY TOTAL IS";M1;", YOUR TOTAL IS";Y1
-910 PRINT
-920 IF INT(M1/2)=M1/2 THEN 950
-930 PRINT "     YOU WON.  DO YOU WANT TO PLAY"
-940 GOTO 960
-950 PRINT "     I WON.  DO YOU WANT TO PLAY"
-960 PRINT "AGAIN?  TYPE 1 FOR YES AND 0 FOR NO."
-970 INPUT A1
-980 IF A1=0 THEN 1030 # say goodbye
-990 M1=0
-1000 Y1=0
-1010 GOTO 200
-1020 GOTO 640
-1030 PRINT
-1040 PRINT "OK.  SEE YOU LATER."
-1050 GOTO 1230 # end
-
-# human moves first
-1060 T=27
-1070 PRINT
-1080 PRINT
-1090 PRINT
-1100 PRINT "TOTAL=";T
-1110 PRINT
-1120 PRINT
-1130 PRINT "WHAT IS YOUR FIRST MOVE";
-1140 INPUT Y
-1150 GOTO 360
-
-# tried to take invalid number of marbles
-1160 PRINT
-1170 PRINT "THE NUMBER OF MARBLES YOU TAKE MUST BE A POSITIVE"
-1180 PRINT "INTEGER BETWEEN 1 AND 4."
-1190 PRINT
-1200 PRINT "     WHAT IS YOUR NEXT MOVE?"
-1210 PRINT
-1220 GOTO 350
-
-1230 END
-
-"""
