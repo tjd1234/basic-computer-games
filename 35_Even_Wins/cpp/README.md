@@ -131,3 +131,20 @@ the `?` `:` operator. The entire body of `next_player` should use a single
 `;`!
 
 Put your updated code in [evenwins6.cpp](evenwins6.cpp).
+
+
+### A Better Computer Player
+
+Modify [evenwins6.cpp](evenwins6.cpp) so that computer plays better than
+random. Think of a strategy of your own, and implement it in `computer_turn`.
+
+As part of your answer, include a comment at the top of `computer_turn` that
+uses full sentences of grammatical and correctly spelled English to:
+
+- Explains how your strategy works.
+- Explains if it is *perfect*, i.e. does it always win when possible? Either
+  explain *how* you know it's perfect, or describe a case where it doesn't
+  play perfectly. Saying something like "I couldn't find any case where it
+  played poorly" is no guarantee that the computer plays perfectly!
+
+Put your updated code in [evenwins7.cpp](evenwins7.cpp).
