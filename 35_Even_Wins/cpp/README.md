@@ -65,24 +65,69 @@ of `string`. Put your updated code in [evenwins2.cpp](evenwins2.cpp).
 
 ### Wins and Losses
 
-Modify [evenwins2.cpp](evenwins2.cpp) to so that at the end of every game it
+Modify [evenwins2.cpp](evenwins2.cpp) so that at the end of every game it
 tells the user how many games they and the computer have won, e.g.:
 
 ```
   Statistics
   ----------
-   total games: 3
-    human wins: 2
- computer wins: 1
+   total games: 7
+    human wins: 5
+ computer wins: 2
 ```
 
-Put your updated code in [evenwins3.cpp](evenwins2.cpp).
+Put your updated code in [evenwins3.cpp](evenwins3.cpp).
+
+
+### Random Taunts
+
+When the computer wins a game, it prints a *taunt* "tremble before it's mighty
+brain!":
+
+```
+cout << "The computer wins: tremble before it's mighty brain!\n";
+```
+
+Modify [evenwins3.cpp](evenwins3.cpp) so that it prints a randomly chosen
+taunt each time the computer wins a game. Choose at least 5 different taunts
+(one of them can be the one already in the program), and make your taunts
+kid-friendly.
+
+Put your updated code in [evenwins4.cpp](evenwins4.cpp).
 
 
 ### Removing Global Variables
 
 In general, global variables are a *bad* idea in programming because it can be
 very difficult to know when they change, and which part of a program changes
-them. In small programs global variables may not be too much of a problem, but
-as your programs get bigger and more complex, global variables are more and
-more of a problem.
+them. Global variables might not cause problems in *small* programs, but as
+your programs get bigger and more complex, global variables are more and more
+likely to be the reason for subtle and hard to fix problems.
+
+Modify [evenwins4.cpp](evenwins4.cpp) so it has *no global variables*. To do
+this, implement a struct called `Gamestate` that looks like this:
+
+```
+struct Gamestate {
+    //
+    // ... all variables needed for a game go here ...
+    //
+};
+```
+
+Then create one `Gamestate` struct inside `main`, and pass it to, and return
+it from, functions as needed. To return values, you can use pass-by-reference.
+
+Global *constants* are permitted, i.e. variables declared using `const` are
+permitted since they can't be changed.
+
+Put your updated code in [evenwins5.cpp](evenwins5.cpp).
+
+
+### The ? : Operator
+
+Modify [evenwins5.cpp](evenwins5.cpp) so that the `next_player` functions uses
+the `?` `:` operator. The entire body of `next_player` should use a single
+`;`!
+
+Put your updated code in [evenwins6.cpp](evenwins6.cpp).
